@@ -1,0 +1,138 @@
+// BLOCK: AUTHURLL
+data.ExecutingBlock("AUTHURLL");
+await HttpRequestStandard(data, new StandardHttpRequestOptions { Content = $"", ContentType = "application/x-www-form-urlencoded", UrlEncodeContent = false, Url = "https://www.netflix.com/more", Method = RuriLib.Functions.Http.HttpMethod.GET, AutoRedirect = true, MaxNumberOfRedirects = 8, ReadResponseContent = true, AbsoluteUriInFirstLine = false, HttpLibrary = RuriLib.Functions.Http.Options.HttpLibrary.SystemNet, CurlImpersonateBrowserProfile = RuriLib.Http.Curl.CurlImpersonateBrowserProfile.Chrome142, CurlUseBrowserHeaders = true, SecurityProtocol = RuriLib.Functions.Http.SecurityProtocol.SystemDefault, IgnoreCertificateValidation = true, CustomCookies = new Dictionary<string, string> { }, CustomHeaders = new Dictionary<string, string> { { $"User-Agent", $"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36" }, { $"Pragma", $"no-cache" }, { $"Accept", $"*/*" }, { $"Accept-Language", $"en-US,en;q=0.8" } }, TimeoutMilliseconds = 15000, HttpVersion = "1.1", CodePagesEncoding = "", AlwaysSendContent = false, DecodeHtml = false, UseCustomCipherSuites = false, CustomCipherSuites = new List<string> { "TLS_AES_128_GCM_SHA256", "TLS_CHACHA20_POLY1305_SHA256", "TLS_AES_256_GCM_SHA384", "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256", "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256", "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256", "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256", "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384", "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384", "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA", "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA", "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA", "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA", "TLS_RSA_WITH_AES_128_GCM_SHA256", "TLS_RSA_WITH_AES_256_GCM_SHA384", "TLS_RSA_WITH_AES_128_CBC_SHA", "TLS_RSA_WITH_AES_256_CBC_SHA", "TLS_RSA_WITH_3DES_EDE_CBC_SHA" } }).ConfigureAwait(false);
+
+// BLOCK: LoliCode
+data.ExecutingBlock("LoliCode");
+
+if (CheckCondition(data, data.SOURCE.AsString(), StrComparison.DoesNotContain, "authURL"))
+{
+data.STATUS = "RETRY";
+return;
+}
+
+// BLOCK: Parse
+data.ExecutingBlock("Parse");
+string Aut = ParseBetweenStrings(data, data.SOURCE.AsString(), "authURL\":\"", "\"", true, null, null, false);
+data.LogVariableAssignment(nameof(Aut));
+
+// BLOCK: Unescape
+data.ExecutingBlock("Unescape");
+string Auth = Unescape(data, Aut.AsString());
+data.LogVariableAssignment(nameof(Auth));
+
+// BLOCK: Url Encode
+data.ExecutingBlock("Url Encode");
+string C1 = UrlEncode(data, Auth.AsString());
+data.LogVariableAssignment(nameof(C1));
+
+// BLOCK: Parse
+data.ExecutingBlock("Parse");
+string AppVersion = ParseBetweenStrings(data, data.SOURCE.AsString(), "X-Netflix.uiVersion\":\"", "\"", true, null, null, false);
+data.LogVariableAssignment(nameof(AppVersion));
+
+// BLOCK: Parse
+data.ExecutingBlock("Parse");
+string Esn = ParseBetweenStrings(data, data.SOURCE.AsString(), ":{\"esn\":\"", "\"", true, null, null, false);
+data.LogVariableAssignment(nameof(Esn));
+
+// BLOCK: Generate
+data.ExecutingBlock("Generate");
+string Uuid = Generate(data, RuriLib.Blocks.RandGenerator.ERandObj.UUID, true);
+data.LogVariableAssignment(nameof(Uuid));
+
+// BLOCK: Url Encode
+data.ExecutingBlock("Url Encode");
+string US = UrlEncode(data, ObjectExtensions.DynamicAsString(input.USERNAME));
+data.LogVariableAssignment(nameof(US));
+
+// BLOCK: Url Encode
+data.ExecutingBlock("Url Encode");
+string PS = UrlEncode(data, ObjectExtensions.DynamicAsString(input.PASSWORD));
+data.LogVariableAssignment(nameof(PS));
+
+// BLOCK: Http Request
+data.ExecutingBlock("Http Request");
+await HttpRequestStandard(data, new StandardHttpRequestOptions { Content = $"authURL={C1}&tracingId={AppVersion}&tracingGroupId=www.netflix.com&esn={Esn}&param=%7B%22flow%22%3A%22mobileSignup%22%2C%22mode%22%3A%22welcome%22%2C%22action%22%3A%22saveAction%22%2C%22fields%22%3A%7B%22userLoginId%22%3A%22{US}%22%2C%22password%22%3A%22{PS}%22%2C%22previousMode%22%3A%22%22%7D%7D", ContentType = "application/x-www-form-urlencoded", UrlEncodeContent = false, Url = "https://ios-cell4.prod.ftl.netflix.com/api/aui/pathEvaluator/web/%5E2.0.0-mobile?landingURL=%2Fmx-en%2Flogin&landingOrigin=https%3A%2F%2Fwww.netflix.com&inapp=false&languages=en-MX&netflixClientPlatform=androidNative&flow=mobileSignUp&mode=login&method=call&falcor_server=0.1.0&callPath=%5B%22aui%22%2C%22moneyball%22%2C%22next%22%5D", Method = RuriLib.Functions.Http.HttpMethod.POST, AutoRedirect = true, MaxNumberOfRedirects = 8, ReadResponseContent = true, AbsoluteUriInFirstLine = false, HttpLibrary = RuriLib.Functions.Http.Options.HttpLibrary.CurlImpersonate, CurlImpersonateBrowserProfile = RuriLib.Http.Curl.CurlImpersonateBrowserProfile.RandomBrowser, CurlUseBrowserHeaders = true, SecurityProtocol = RuriLib.Functions.Http.SecurityProtocol.SystemDefault, IgnoreCertificateValidation = true, CustomCookies = new Dictionary<string, string> { }, CustomHeaders = new Dictionary<string, string> { { $"accept-encoding", $"gzip, deflate, br, zstd" }, { $"accept-language", $"es-419,es;q=0.5" }, { $"content-length", $"3039" }, { $"content-type", $"application/json" }, { $"origin", $"https://www.netflix.com" }, { $"priority", $"u=1, i" }, { $"referer", $"https://www.netflix.com/" }, { $"sec-ch-ua", $"\"Not;A=Brand\";v=\"8\", \"Chromium\";v=\"150\", \"Brave\";v=\"150\"" }, { $"sec-ch-ua-mobile", $"?0" }, { $"sec-ch-ua-platform", $"\"Windows\"" }, { $"sec-fetch-dest", $"empty" }, { $"sec-fetch-mode", $"cors" }, { $"sec-fetch-site", $"same-site" }, { $"sec-gpc", $"1" }, { $"user-agent", $"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" }, { $"x-netflix.context.app-version", $"{AppVersion}" }, { $"x-netflix.request.routing", $"{{\"path\":\"/nq/aui/endpoint/%5E1.0.0-web/pathEvaluator\",\"control_tag\":\"auinqweb\"}}" }, { $"x-netflix.context.locales", $"es-co" }, { $"x-netflix.context.operation-name", $"CLCSWebInitSignup" }, { $"x-netflix.context.ui-flavor", $"akira" }, { $"x-netflix.request.attempt", $"1" }, { $"x-netflix.request.clcs.bucket", $"high" }, { $"x-netflix.request.client.context", $"{{\"appstate\":\"foreground\"}}" }, { $"x-netflix.request.id", $"91e517fe47b14291944dbd7939760dc4" }, { $"x-netflix.request.originating.url", $"https://www.netflix.com/co/" }, { $"x-netflix.request.toplevel.uuid", $"{Uuid}" } }, TimeoutMilliseconds = 15000, HttpVersion = "1.1", CodePagesEncoding = "", AlwaysSendContent = false, DecodeHtml = false, UseCustomCipherSuites = false, CustomCipherSuites = new List<string> { "TLS_AES_128_GCM_SHA256", "TLS_CHACHA20_POLY1305_SHA256", "TLS_AES_256_GCM_SHA384", "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256", "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256", "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256", "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256", "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384", "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384", "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA", "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA", "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA", "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA", "TLS_RSA_WITH_AES_128_GCM_SHA256", "TLS_RSA_WITH_AES_256_GCM_SHA384", "TLS_RSA_WITH_AES_128_CBC_SHA", "TLS_RSA_WITH_AES_256_CBC_SHA", "TLS_RSA_WITH_3DES_EDE_CBC_SHA" } }).ConfigureAwait(false);
+
+// BLOCK: LoliCode
+data.ExecutingBlock("LoliCode");
+
+if (CheckCondition(data, data.SOURCE.AsString(), StrComparison.Contains, "NEVER_MEMBER"))
+{
+data.STATUS = "CUSTOM";
+return;
+}
+if (CheckCondition(data, data.SOURCE.AsString(), StrComparison.Contains, "FORMER_MEMBER"))
+{
+data.STATUS = "EXPIRED";
+return;
+}
+if (CheckCondition(data, data.SOURCE.AsString(), StrComparison.Contains, "registrationWithContext"))
+{
+data.STATUS = "FAIL";
+return;
+}
+if (CheckCondition(data, data.SOURCE.AsString(), StrComparison.Contains, "NON_REGISTERED_MEMBER"))
+{
+data.STATUS = "FAIL";
+return;
+}
+if (CheckCondition(data, data.SOURCE.AsString(), StrComparison.Contains, "generic_failure"))
+{
+data.STATUS = "RETRY";
+return;
+}
+if (CheckCondition(data, data.RESPONSECODE.AsLong(), NumComparison.EqualTo, 403))
+{
+data.STATUS = "RETRY";
+return;
+}
+int retryCount = 0;
+const int maxRetries = 4;
+
+rech:
+
+// BLOCK: CHECK
+data.ExecutingBlock("CHECK");
+await HttpRequestStandard(data, new StandardHttpRequestOptions { Content = $"allocations=%7B%2255321%22%3A9%7D&tracingId={AppVersion}&tracingGroupId=www.netflix.com&esn={Esn}&authURL={C1}&param=%7B%22flow%22%3A%22signupSimplicity%22%2C%22mode%22%3A%22passwordOnly%22%2C%22action%22%3A%22loginAction%22%2C%22fields%22%3A%7B%22password%22%3A%7B%22value%22%3A%22{PS}%22%7D%2C%22email%22%3A%7B%22value%22%3A%22{US}%22%7D%2C%22previousMode%22%3A%22%22%7D%7D", ContentType = "application/x-www-form-urlencoded", UrlEncodeContent = false, Url = "https://netflix.com/api/aui/pathEvaluator/web/%5E2.0.0?landingURL=%2Fsignup%2Fpassword&landingOrigin=https%3A%2F%2Fwww.netflix.com&inapp=false&isConsumptionOnly=false&logConsumptionOnly=false&languages=es-CO&netflixClientPlatform=androidNative&flow=mobileSignUp&mode=loginsupportCategory=innovation&method=call&callPath=%5B%22aui%22%2C%22moneyball%22%2C%22next%22%5D&falcor_server=0.1.0", Method = RuriLib.Functions.Http.HttpMethod.POST, AutoRedirect = true, MaxNumberOfRedirects = 8, ReadResponseContent = true, AbsoluteUriInFirstLine = false, HttpLibrary = RuriLib.Functions.Http.Options.HttpLibrary.CurlImpersonate, CurlImpersonateBrowserProfile = RuriLib.Http.Curl.CurlImpersonateBrowserProfile.RandomBrowser, CurlUseBrowserHeaders = true, SecurityProtocol = RuriLib.Functions.Http.SecurityProtocol.SystemDefault, IgnoreCertificateValidation = true, CustomCookies = new Dictionary<string, string> { }, CustomHeaders = new Dictionary<string, string> { { $"Host", $"www.netflix.com" }, { $"User-Agent", $"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0" }, { $"Accept", $"*/*" }, { $"Accept-Language", $"en-US en; q=0.5" }, { $"Referer", $"https://www.netflix.com/signup/password?locale=en-US" }, { $"x-netflix.request.routing", $"{{\"path\":\"/nq/aui/endpoint/%5E1.0.0-web/pathEvaluator\",\"control_tag\":\"auinqweb\"}}" }, { $"x-netflix.nq.stack", $"prod" }, { $"X-Netflix.uiVersion", $"va4a0d0bd" }, { $"X-Netflix.esnPrefix", $"NFCDFF-02-" }, { $"X-Netflix.browserName", $"Firefox" }, { $"X-Netflix.browserVersion", $"135" }, { $"X-Netflix.osName", $"Windows" }, { $"X-Netflix.osFullName", $"Windows 10" }, { $"X-Netflix.osVersion", $"10.0" }, { $"X-Netflix.clientType", $"akira" }, { $"x-netflix.client.request.name", $"ui/xhrUnclassified" }, { $"x-netflix.request.attempt", $"1" }, { $"x-netflix.request.client.context", $"{{\"appstate\":\"foreground\"}}" }, { $"Origin", $"https://www.netflix.com" }, { $"Connection", $"keep-alive" }, { $"Sec-Fetch-Dest", $"empty" }, { $"Sec-Fetch-Mode", $"cors" }, { $"Sec-Fetch-Site", $"same-origin" }, { $"Priority", $"u=0" }, { $"Accept-Encoding", $"gzip, deflate" }, { $"Content-Type", $"application/x-www-form-urlencoded" }, { $"Content-Length", $"512" } }, TimeoutMilliseconds = 15000, HttpVersion = "1.1", CodePagesEncoding = "", AlwaysSendContent = false, DecodeHtml = false, UseCustomCipherSuites = false, CustomCipherSuites = new List<string> { "TLS_AES_128_GCM_SHA256", "TLS_CHACHA20_POLY1305_SHA256", "TLS_AES_256_GCM_SHA384", "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256", "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256", "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256", "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256", "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384", "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384", "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA", "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA", "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA", "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA", "TLS_RSA_WITH_AES_128_GCM_SHA256", "TLS_RSA_WITH_AES_256_GCM_SHA384", "TLS_RSA_WITH_AES_128_CBC_SHA", "TLS_RSA_WITH_AES_256_CBC_SHA", "TLS_RSA_WITH_3DES_EDE_CBC_SHA" } }).ConfigureAwait(false);
+
+// BLOCK: LoliCode
+data.ExecutingBlock("LoliCode");
+if (CheckCondition(data, data.SOURCE.AsString(), StrComparison.Contains, "NON_REGISTERED_MEMBER"))
+{
+data.STATUS = "FAIL";
+return;
+}
+if (CheckCondition(data, data.SOURCE.AsString(), StrComparison.Contains, "email_is_empty"))
+{
+data.STATUS = "FAIL";
+return;
+}
+if (CheckCondition(data, data.SOURCE.AsString(), StrComparison.Contains, "NEVER_MEMBER"))
+{
+data.STATUS = "CUSTOM";
+return;
+}
+if (CheckCondition(data, data.SOURCE.AsString(), StrComparison.Contains, "FORMER_MEMBER"))
+{
+data.STATUS = "CUSTOM";
+return;
+}
+if (CheckCondition(data, data.SOURCE.AsString(), StrComparison.Contains, "CURRENT_MEMBER"))
+{
+data.STATUS = "SUCCESS";
+}
+if (CheckCondition(data, data.RESPONSECODE.AsString(), StrComparison.NotEqualTo, "200"))
+{
+    retryCount++;
+    if (retryCount >= maxRetries)
+    {
+        data.STATUS = "RETRY";
+        return;
+    }
+    else
+    {
+        goto rech;
+    }
+}
